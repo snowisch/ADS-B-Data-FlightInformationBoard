@@ -78,7 +78,47 @@ FlightInfoBoard
       Output a specific part of the data to console for debug
   |- AircraftInfo
     Maintain the AircraftMap map
+    |- recordAddToAircraftMap
+      Update ADS-B records in Map database in memory, accroding to message types. The main key is the aircraft ICAO code, `             hexident. If this aircraft doesn't exist, create a new record in Map. Except parameters in ADS-B data, three more data
+        has been add: 
+          velocityEpoch: the time of the last time velocity parameters was recorded.
+          acceleration: the mode of the all-direction speed vector changes between last two times the velocity parameters was
+            recorded devide the time between these two.
+          previousStatus: the status info given for the previous info update time. This parameter is given by logic part.
+      Message types have labels below:
+        1, include:
+          Callsign;
+        2, include all parameters:
+          groundSpeed,
+          verticalRate,
+          track,
+          latitude,
+          longtitude,
+          altitude;
+          Map's timeMsgLog and velocityEpoch will be updated.
+         3, include location parameters:
+          latitude,
+          longtitude,
+          altitude;
+         4, include velocity parameters:
+          groundSpeed,
+          verticalRate,
+          track.
+    |- statusUpdate
+      A port for other class to change the Map. Now only the previousStatus can be edited.
+    |- cleanAircraftsMap
+      Search the Map, if:
+        The Aircraft is not normally flying or parking and it has been lost contact for maxExpireTime (120s) 
+        or
+        The Aircraft is normally flying or parking and it had been lost contact for expireTime (60s)
+      the remove the aircraft record from Map.
+      This method will be called every refreshTime (1s) in main faction.
+    |- writeToConsole
+      Output a specific part of the Map to console for debug
 |- logic
-  |- 
+  Retuern a char form result for a set of an aircraft record.
+  |- AircraftStatus
+  |- AircraftStatusCalculator
+  |- AircraftStatusInterpolation
 |- watcher
 |- gadget
